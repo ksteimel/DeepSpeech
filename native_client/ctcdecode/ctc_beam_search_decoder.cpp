@@ -15,7 +15,7 @@
 DecoderState*
 decoder_init(const Alphabet &alphabet,
              int class_dim,
-             Scorer* ext_scorer)
+             KenLMScorer* ext_scorer)
 {
   // dimension check
   VALID_CHECK_EQ(class_dim, alphabet.GetSize()+1,
@@ -55,7 +55,7 @@ decoder_next(const double *probs,
              double cutoff_prob,
              size_t cutoff_top_n,
              size_t beam_size,
-             Scorer *ext_scorer)
+             KenLMScorer *ext_scorer)
 {
   // prefix search over time 
   for (size_t rel_time_step = 0; rel_time_step < time_dim; ++rel_time_step, ++state->time_step) {
@@ -79,13 +79,13 @@ decoder_next(const double *probs,
     for (size_t index = 0; index < log_prob_idx.size(); index++) {
       auto c = log_prob_idx[index].first;
       auto log_prob_c = log_prob_idx[index].second;
-
+      std::cerr << "decoder_next() timestep #" << rel_time_step << " character index: " << c << "string: " << std::endl;//<< alphabet.StringFromLabel(c) << std::endl;
       for (size_t i = 0; i < state->prefixes.size() && i < beam_size; ++i) {
         auto prefix = state->prefixes[i];
         if (full_beam && log_prob_c + prefix->score < min_cutoff) {
           break;
         }
-
+        //std::cerr << "Prefix inside decode_next(): " << prefix << std::endl;
         // blank
         if (c == state->blank_id) {
           prefix->log_prob_b_cur =
@@ -122,7 +122,7 @@ decoder_next(const double *probs,
             } else {
               prefix_to_score = prefix;
             }
-
+            std::cerr << "decoder_next() prefix to score " << prefix_to_score << std::endl;
             float score = 0.0;
             std::vector<std::string> ngram;
             ngram = ext_scorer->make_ngram(prefix_to_score);
@@ -162,7 +162,7 @@ std::vector<Output>
 decoder_decode(DecoderState *state,
                const Alphabet &alphabet,
                size_t beam_size,
-               Scorer* ext_scorer)
+               KenLMScorer* ext_scorer)
 {
   std::vector<PathTrie*> prefixes_copy = state->prefixes;
   std::unordered_map<const PathTrie*, float> scores;
@@ -220,7 +220,7 @@ std::vector<Output> ctc_beam_search_decoder(
     size_t beam_size,
     double cutoff_prob,
     size_t cutoff_top_n,
-    Scorer *ext_scorer) {
+    KenLMScorer *ext_scorer) {
   
   DecoderState *state = decoder_init(alphabet, class_dim, ext_scorer);
   decoder_next(probs, alphabet, state, time_dim, class_dim, cutoff_prob, cutoff_top_n, beam_size, ext_scorer);
@@ -244,12 +244,12 @@ ctc_beam_search_decoder_batch(
     size_t num_processes,
     double cutoff_prob,
     size_t cutoff_top_n,
-    Scorer *ext_scorer) {
+    KenLMScorer *ext_scorer) {
   VALID_CHECK_GT(num_processes, 0, "num_processes must be nonnegative!");
   VALID_CHECK_EQ(batch_size, seq_lengths_size, "must have one sequence length per batch element");
   // thread pool
   ThreadPool pool(num_processes);
-
+  std::cerr << "Beginning enqueue process" << std::endl;
   // enqueue the tasks of decoding
   std::vector<std::future<std::vector<Output>>> res;
   for (size_t i = 0; i < batch_size; ++i) {

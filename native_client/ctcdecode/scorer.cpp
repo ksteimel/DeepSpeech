@@ -29,7 +29,7 @@ using namespace lm::ngram;
 static const int32_t MAGIC = 'TRIE';
 static const int32_t FILE_VERSION = 4;
 
-Scorer::Scorer(double alpha,
+KenLMScorer::KenLMScorer(double alpha,
                double beta,
                const std::string& lm_path,
                const std::string& trie_path,
@@ -56,20 +56,20 @@ Scorer::Scorer(double alpha,
   setup(lm_path, trie_path);
 }
 
-Scorer::Scorer(double alpha,
+KenLMScorer::KenLMScorer(double alpha,
                double beta,
                const std::string& lm_path,
                const std::string& trie_path,
                const std::string& alphabet_config_path)
-  : Scorer(alpha, beta, lm_path, trie_path, Alphabet(alphabet_config_path.c_str()))
+  : KenLMScorer(alpha, beta, lm_path, trie_path, Alphabet(alphabet_config_path.c_str()))
 {
 }
 
-Scorer::~Scorer()
+KenLMScorer::~KenLMScorer()
 {
 }
 
-void Scorer::setup(const std::string& lm_path, const std::string& trie_path)
+void KenLMScorer::setup(const std::string& lm_path, const std::string& trie_path)
 {
   // load language model
   const char* filename = lm_path.c_str();
@@ -78,7 +78,7 @@ void Scorer::setup(const std::string& lm_path, const std::string& trie_path)
   bool has_trie = trie_path.size() && access(trie_path.c_str(), R_OK) == 0;
 
   lm::ngram::Config config;
-
+  std::cerr << "Inside Scorer::setup" << std::endl;
   if (!has_trie) { // no trie was specified, build it now
     RetrieveStrEnumerateVocab enumerate;
     config.enumerate_vocab = &enumerate;
@@ -132,7 +132,7 @@ void Scorer::setup(const std::string& lm_path, const std::string& trie_path)
   max_order_ = language_model_->Order();
 }
 
-void Scorer::save_dictionary(const std::string& path)
+void KenLMScorer::save_dictionary(const std::string& path)
 {
   std::ofstream fout(path, std::ios::binary);
   fout.write(reinterpret_cast<const char*>(&MAGIC), sizeof(MAGIC));
@@ -146,7 +146,7 @@ void Scorer::save_dictionary(const std::string& path)
   }
 }
 
-double Scorer::get_log_cond_prob(const std::vector<std::string>& words)
+double KenLMScorer::get_log_cond_prob(const std::vector<std::string>& words)
 {
   double cond_prob = OOV_SCORE;
   lm::ngram::State state, tmp_state, out_state;
@@ -167,7 +167,7 @@ double Scorer::get_log_cond_prob(const std::vector<std::string>& words)
   return cond_prob/NUM_FLT_LOGE;
 }
 
-double Scorer::get_sent_log_prob(const std::vector<std::string>& words)
+double KenLMScorer::get_sent_log_prob(const std::vector<std::string>& words)
 {
   std::vector<std::string> sentence;
   if (words.size() == 0) {
@@ -184,7 +184,7 @@ double Scorer::get_sent_log_prob(const std::vector<std::string>& words)
   return get_log_prob(sentence);
 }
 
-double Scorer::get_log_prob(const std::vector<std::string>& words)
+double KenLMScorer::get_log_prob(const std::vector<std::string>& words)
 {
   assert(words.size() > max_order_);
   double score = 0.0;
@@ -196,13 +196,13 @@ double Scorer::get_log_prob(const std::vector<std::string>& words)
   return score;
 }
 
-void Scorer::reset_params(float alpha, float beta)
+void KenLMScorer::reset_params(float alpha, float beta)
 {
   this->alpha = alpha;
   this->beta = beta;
 }
 
-std::vector<std::string> Scorer::split_labels(const std::vector<int>& labels)
+std::vector<std::string> KenLMScorer::split_labels(const std::vector<int>& labels)
 {
   if (labels.empty()) return {};
 
@@ -216,7 +216,7 @@ std::vector<std::string> Scorer::split_labels(const std::vector<int>& labels)
   return words;
 }
 
-std::vector<std::string> Scorer::make_ngram(PathTrie* prefix)
+std::vector<std::string> KenLMScorer::make_ngram(PathTrie* prefix)
 {
   std::vector<std::string> ngram;
   PathTrie* current_node = prefix;
@@ -250,7 +250,7 @@ std::vector<std::string> Scorer::make_ngram(PathTrie* prefix)
   return ngram;
 }
 
-void Scorer::fill_dictionary(const std::vector<std::string>& vocabulary, bool add_space)
+void KenLMScorer::fill_dictionary(const std::vector<std::string>& vocabulary, bool add_space)
 {
   // ConstFst is immutable, so we need to use a MutableFst to create the trie,
   // and then we convert to a ConstFst for the decoder and for storing on disk.

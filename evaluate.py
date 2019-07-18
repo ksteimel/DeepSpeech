@@ -12,7 +12,7 @@ import progressbar
 import tensorflow as tf
 import tensorflow.compat.v1 as tfv1
 
-from ds_ctcdecoder import ctc_beam_search_decoder_batch, Scorer
+from ds_ctcdecoder import ctc_beam_search_decoder_batch, KenLMScorer
 from six.moves import zip
 
 from util.config import Config, initialize_globals
@@ -41,7 +41,7 @@ def sparse_tuple_to_texts(sp_tuple, alphabet):
 
 
 def evaluate(test_csvs, create_model, try_loading):
-    scorer = Scorer(FLAGS.lm_alpha, FLAGS.lm_beta,
+    scorer = KenLMScorer(FLAGS.lm_alpha, FLAGS.lm_beta,
                     FLAGS.lm_binary_path, FLAGS.lm_trie_path,
                     Config.alphabet)
 
@@ -109,6 +109,7 @@ def evaluate(test_csvs, create_model, try_loading):
                 except tf.errors.OutOfRangeError:
                     break
 
+                print("Just before calling beam search decoder_batch")
                 decoded = ctc_beam_search_decoder_batch(batch_logits, batch_lengths, Config.alphabet, FLAGS.beam_width,
                                                         num_processes=num_processes, scorer=scorer)
                 predictions.extend(d[0][1] for d in decoded)

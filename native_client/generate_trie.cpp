@@ -9,7 +9,7 @@ using namespace std;
 
 int generate_trie(const char* alphabet_path, const char* kenlm_path, const char* trie_path) {
   Alphabet alphabet(alphabet_path);
-  Scorer scorer(0.0, 0.0, kenlm_path, "", alphabet);
+  KenLMScorer scorer(0.0, 0.0, kenlm_path, "", alphabet);
   scorer.save_dictionary(trie_path);
   return 0;
 }

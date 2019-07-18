@@ -38,8 +38,8 @@ OPENFST_SOURCES_PLATFORM = select({
 DECODER_SOURCES = glob([
     "ctcdecode/*.h",
     "ctcdecode/*.cpp",  
-]) + OPENFST_SOURCES_PLATFORM + KENLM_SOURCES
-
+ ], exclude=["ctcdecode/*_wrap.cpp"]) + OPENFST_SOURCES_PLATFORM + KENLM_SOURCES
+ 
 OPENFST_INCLUDES_PLATFORM = select({ 
         "//tensorflow:windows": ["ctcdecode/third_party/openfst-1.6.9-win/src/include"],
         "//conditions:default": ["ctcdecode/third_party/openfst-1.6.7/src/include"],

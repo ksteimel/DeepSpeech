@@ -317,7 +317,7 @@ DS_EnableDecoderWithLM(ModelState* aCtx,
                        float aLMBeta)
 {
   try {
-    aCtx->scorer_ = new Scorer(aLMAlpha, aLMBeta,
+    aCtx->scorer_ = new KenLMScorer(aLMAlpha, aLMBeta,
                                aLMPath ? aLMPath : "",
                                aTriePath ? aTriePath : "",
                                *aCtx->alphabet_);

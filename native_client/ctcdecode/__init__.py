@@ -3,8 +3,8 @@ from __future__ import absolute_import, division, print_function
 from . import swigwrapper
 
 
-class Scorer(swigwrapper.Scorer):
-    """Wrapper for Scorer.
+class KenLMScorer(swigwrapper.KenLMScorer):
+    """Wrapper for KenLMScorer.
 
     :param alpha: Parameter associated with language model. Don't use
                   language model when alpha = 0.
@@ -19,7 +19,7 @@ class Scorer(swigwrapper.Scorer):
     """
 
     def __init__(self, alpha, beta, model_path, trie_path, alphabet):
-        swigwrapper.Scorer.__init__(self, alpha, beta, model_path, trie_path, alphabet.config_file())
+        swigwrapper.KenLMScorer.__init__(self, alpha, beta, model_path, trie_path, alphabet.config_file())
 
 
 def ctc_beam_search_decoder(probs_seq,
@@ -47,7 +47,7 @@ def ctc_beam_search_decoder(probs_seq,
     :type cutoff_top_n: int
     :param scorer: External scorer for partially decoded sentence, e.g. word
                    count or language model.
-    :type scorer: Scorer
+    :type scorer: KenLMScorer
     :return: List of tuples of log probability and sentence as decoding
              results, in descending order of the probability.
     :rtype: list
@@ -89,7 +89,7 @@ def ctc_beam_search_decoder_batch(probs_seq,
     :type num_processes: int
     :param scorer: External scorer for partially decoded sentence, e.g. word
                    count or language model.
-    :type scorer: Scorer
+    :type scorer: KenLMScorer
     :return: List of tuples of log probability and sentence as decoding
              results, in descending order of the probability.
     :rtype: list

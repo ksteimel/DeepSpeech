@@ -1,6 +1,6 @@
 # Main training requirements
-tensorflow == 1.14.0
-numpy == 1.15.4
+tensorflow-gpu == 1.14.0
+numpy == 1.16.4
 progressbar2
 pandas
 six
@@ -8,7 +8,7 @@ pyxdg
 attrdict
 
 # Requirements for building native_client files
-setuptools
+setuptools == 41.0.0
 
 # Requirements for importers
 sox

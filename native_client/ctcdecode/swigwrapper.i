@@ -30,7 +30,7 @@ mod_decoder(const double *probs,
             size_t beam_size,
             double cutoff_prob,
             size_t cutoff_top_n,
-            Scorer *ext_scorer)
+            KenLMScorer *ext_scorer)
 {
     Alphabet a(alphabet_config_path);
     return ctc_beam_search_decoder(probs, time_dim, class_dim, a, beam_size,
@@ -52,7 +52,7 @@ mod_decoder_batch(const double *probs,
                   size_t num_processes,
                   double cutoff_prob,
                   size_t cutoff_top_n,
-                  Scorer *ext_scorer)
+                  KenLMScorer *ext_scorer)
 {
     Alphabet a(alphabet_config_path);
     return ctc_beam_search_decoder_batch(probs, batch_dim, time_dim, class_dim,
@@ -63,7 +63,7 @@ mod_decoder_batch(const double *probs,
 %}
 
 
-%ignore Scorer::dictionary;
+%ignore KenLMScorer::dictionary;
 
 %include "output.h"
 %include "scorer.h"

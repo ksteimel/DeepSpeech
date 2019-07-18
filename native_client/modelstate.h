@@ -19,7 +19,7 @@ struct ModelState {
   static constexpr unsigned int DEFAULT_WINDOW_STEP = DEFAULT_SAMPLE_RATE * 0.02;
 
   Alphabet* alphabet_;
-  Scorer* scorer_;
+  KenLMScorer* scorer_;
   unsigned int beam_width_;
   unsigned int n_steps_;
   unsigned int n_context_;

@@ -16,7 +16,7 @@ import tensorflow as tf
 import tensorflow.compat.v1 as tfv1
 
 from datetime import datetime
-from ds_ctcdecoder import ctc_beam_search_decoder, Scorer
+from ds_ctcdecoder import ctc_beam_search_decoder, KenLMScorer
 from evaluate import evaluate
 from six.moves import zip, range
 from tensorflow.python.tools import freeze_graph, strip_unused_lib
@@ -784,7 +784,7 @@ def do_single_file_inference(input_file_path):
 
         logits = np.squeeze(logits)
 
-        scorer = Scorer(FLAGS.lm_alpha, FLAGS.lm_beta,
+        scorer = KenLMScorer(FLAGS.lm_alpha, FLAGS.lm_beta,
                         FLAGS.lm_binary_path, FLAGS.lm_trie_path,
                         Config.alphabet)
         decoded = ctc_beam_search_decoder(logits, Config.alphabet, FLAGS.beam_width, scorer=scorer)

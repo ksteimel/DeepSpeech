@@ -35,25 +35,25 @@ public:
  * model scoring and word insertion.
  *
  * Example:
- *     Scorer scorer(alpha, beta, "path_of_language_model");
+ *     KenLMScorer scorer(alpha, beta, "path_of_language_model");
  *     scorer.get_log_cond_prob({ "WORD1", "WORD2", "WORD3" });
  *     scorer.get_sent_log_prob({ "WORD1", "WORD2", "WORD3" });
  */
-class Scorer {
+class KenLMScorer {
   using FstType = PathTrie::FstType;
 
 public:
-  Scorer(double alpha,
+  KenLMScorer(double alpha,
          double beta,
          const std::string &lm_path,
          const std::string &trie_path,
          const Alphabet &alphabet);
-  Scorer(double alpha,
+  KenLMScorer(double alpha,
          double beta,
          const std::string &lm_path,
          const std::string &trie_path,
          const std::string &alphabet_config_path);
-  ~Scorer();
+  ~KenLMScorer();
 
   double get_log_cond_prob(const std::vector<std::string> &words);
 

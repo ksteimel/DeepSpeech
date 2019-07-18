@@ -22,7 +22,7 @@
 */
 DecoderState* decoder_init(const Alphabet &alphabet,
                            int class_dim,
-                           Scorer *ext_scorer);
+                           KenLMScorer *ext_scorer);
 
 /* Send data to the decoder
 
@@ -48,7 +48,7 @@ void decoder_next(const double *probs,
                   double cutoff_prob,
                   size_t cutoff_top_n,
                   size_t beam_size,
-                  Scorer *ext_scorer);
+                  KenLMScorer *ext_scorer);
 
 /* Get transcription for the data you sent via decoder_next()
 
@@ -66,7 +66,7 @@ void decoder_next(const double *probs,
 std::vector<Output> decoder_decode(DecoderState *state,
                                    const Alphabet &alphabet,
                                    size_t beam_size,
-                                   Scorer* ext_scorer);
+                                   KenLMScorer* ext_scorer);
 
 /* CTC Beam Search Decoder
  * Parameters:
@@ -94,7 +94,7 @@ std::vector<Output> ctc_beam_search_decoder(
     size_t beam_size,
     double cutoff_prob,
     size_t cutoff_top_n,
-    Scorer *ext_scorer);
+    KenLMScorer *ext_scorer);
 
 /* CTC Beam Search Decoder for batch data
  * Parameters:
@@ -125,6 +125,6 @@ ctc_beam_search_decoder_batch(
     size_t num_processes,
     double cutoff_prob,
     size_t cutoff_top_n,
-    Scorer *ext_scorer);
+    KenLMScorer *ext_scorer);
 
 #endif  // CTC_BEAM_SEARCH_DECODER_H_
